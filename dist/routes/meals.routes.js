@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const meals_controller_js_1 = require("../controllers/meals.controller.js");
+const auth_middleware_js_1 = require("../middleware/auth.middleware.js");
+const router = (0, express_1.Router)();
+router.get('/', auth_middleware_js_1.requireAuth, meals_controller_js_1.getMeals);
+router.post('/', auth_middleware_js_1.requireAuth, meals_controller_js_1.postMeal);
+router.patch('/:id', auth_middleware_js_1.requireAuth, meals_controller_js_1.patchMeal);
+exports.default = router;

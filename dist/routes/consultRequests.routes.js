@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const consultRequests_controller_js_1 = require("../controllers/consultRequests.controller.js");
+const auth_middleware_js_1 = require("../middleware/auth.middleware.js");
+const router = (0, express_1.Router)();
+router.post('/', auth_middleware_js_1.optionalAuth, consultRequests_controller_js_1.postConsultRequest);
+router.get('/me', auth_middleware_js_1.requireAuth, consultRequests_controller_js_1.getMyConsultRequests);
+router.get('/:id', auth_middleware_js_1.requireAuth, consultRequests_controller_js_1.getConsultRequest);
+exports.default = router;

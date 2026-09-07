@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const gyms_controller_js_1 = require("../controllers/gyms.controller.js");
+const auth_middleware_js_1 = require("../middleware/auth.middleware.js");
+const router = (0, express_1.Router)();
+router.get('/recommended', auth_middleware_js_1.optionalAuth, gyms_controller_js_1.getRecommendedGyms);
+router.get('/', gyms_controller_js_1.getGyms);
+router.post('/sync-nearby', gyms_controller_js_1.postSyncNearbyGyms);
+router.get('/:gymId/trainers', gyms_controller_js_1.getGymTrainers);
+router.get('/:id', gyms_controller_js_1.getGym);
+exports.default = router;
