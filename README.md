@@ -1,6 +1,8 @@
-# FitCheck — Monorepo
+# FitCheck
 
 피트니스 입문자와 골목 헬스장(소상공인)을 잇는 스마트 피트니스 플랫폼입니다.
+
+> **2026-09-07** — Naver AI Agent Challenge에서 시작된 개인 프로젝트를 GitHub Organization으로 분리 및 푸시하였습니다.
 
 ## 현재 진행도 (2026-07-30)
 
