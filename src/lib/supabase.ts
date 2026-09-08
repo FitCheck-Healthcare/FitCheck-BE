@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { WebSocketLikeConstructor } from '@supabase/realtime-js';
 import WebSocket from 'ws';
 
 let client: SupabaseClient | null = null;
@@ -6,13 +7,15 @@ let client: SupabaseClient | null = null;
 /**
  * supabase-js Realtime은 Node 22+ 네이티브 WebSocket을 가정한다.
  * Node 20에서는 `ws`를 넘기지 않으면 createClient() 자체가 throw 한다.
+ *
+ * `ws` 생성자 오버로드가 supabase-js `WebSocketLikeConstructor`와 맞지 않아 캐스팅한다.
  */
-function nodeRealtimeTransport() {
+function nodeRealtimeTransport(): WebSocketLikeConstructor {
   if (typeof globalThis.WebSocket === 'undefined') {
     (globalThis as typeof globalThis & { WebSocket: typeof WebSocket }).WebSocket =
       WebSocket as unknown as typeof globalThis.WebSocket;
   }
-  return WebSocket;
+  return WebSocket as unknown as WebSocketLikeConstructor;
 }
 
 export function getSupabase(): SupabaseClient {
