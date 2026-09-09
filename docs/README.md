@@ -2,10 +2,13 @@
 
 백엔드 API 명세·진행도 문서입니다.
 
+> **2026-09-07** — Naver AI Agent Challenge에서 시작된 개인 프로젝트를 GitHub Organization으로 분리 및 푸시하였습니다.
+
 | 문서 | 설명 |
 |------|------|
 | [API.md](./API.md) | REST API v1 명세 (MVP) |
 | [../README.md](../README.md) | 환경 변수, PII 암호화, 헬스장 매칭 점수 |
+| [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE) | 웹(frontend-web) · 모바일(mobile-app) |
 
 ## 현재 진행도 (2026-07-30)
 
@@ -42,4 +45,5 @@
 | **프로덕션 API** | Render (Web Service) | https://fitcheck-server-wvj4.onrender.com/api/v1 |
 | **로컬 개발** | — | `http://localhost:5001/api/v1` |
 
-프론트엔드(Vercel)는 `VITE_API_BASE_URL=https://fitcheck-server-wvj4.onrender.com` 로 Render API를 호출합니다.
+프론트엔드(Vercel)는 `VITE_API_BASE_URL=https://fitcheck-server-wvj4.onrender.com` 로 Render API를 호출합니다.  
+웹·모바일 저장소: [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE)

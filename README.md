@@ -1,8 +1,10 @@
-# FitCheck
+# FitCheck Backend
 
-피트니스 입문자와 골목 헬스장(소상공인)을 잇는 스마트 피트니스 플랫폼입니다.
+피트니스 입문자와 골목 헬스장(소상공인)을 잇는 스마트 피트니스 플랫폼의 **API 서버**입니다.
 
 > **2026-09-07** — Naver AI Agent Challenge에서 시작된 개인 프로젝트를 GitHub Organization으로 분리 및 푸시하였습니다.
+
+프론트엔드(웹·모바일)는 별도 저장소입니다. → **[FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE)**
 
 ## 현재 진행도 (2026-07-30)
 
@@ -11,10 +13,10 @@
 
 | 영역 | 상태 | 요약 |
 |------|------|------|
-| **Backend API** | ✅ MVP | 강좌·헬스장·상담(PII)·식단(AI)·매칭 점수 — [backend/docs/README.md](../backend/docs/README.md) |
-| **Frontend 회원 `/user`** | ✅ | Google + 이메일 이중 로그인, 비밀번호 재설정·계정 설정, 홈·강좌·지도·상담·식단 API 연동 — [frontend-web/README.md](../frontend-web/README.md) |
+| **Backend API** | ✅ MVP | 강좌·헬스장·상담(PII)·식단(AI)·매칭 점수 — [docs/README.md](./docs/README.md) |
+| **Frontend 회원 `/user`** | ✅ | Google + 이메일 이중 로그인, 홈·강좌·지도·상담·식단 API 연동 — [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE) |
 | **Frontend 트레이너 `/trainer`** | 🟡 Mock | localStorage 기반, 백엔드 미연동 |
-| **Mobile App** | ✅ WebView | Safe Area 연동 + frontend-web 래퍼 — [mobile-app/README.md](../mobile-app/README.md) |
+| **Mobile App** | ✅ WebView | Safe Area 연동 + frontend-web 래퍼 — [FitCheck-FE/mobile-app](https://github.com/FitCheck-Healthcare/FitCheck-FE/tree/main/mobile-app) |
 
 **범례:** ✅ 동작 · 🟡 부분/Mock · ❌ 미구현
 
@@ -30,25 +32,31 @@
 ## 프로젝트 구조
 
 ```
-fitcheck-project/
-├── backend/         # Express API + Supabase
-├── frontend-web/    # Vite + React (회원 / 트레이너)
-└── mobile-app/      # Expo WebView (frontend-web 로드)
+FitCheck-BE/
+├── src/
+│   ├── app.ts              # Express 엔트리
+│   ├── controllers/        # 요청 처리
+│   ├── routes/             # /api/v1/* 라우트
+│   ├── services/           # 도메인 로직 · Gemini · Naver Search
+│   ├── middleware/         # JWT 검증
+│   ├── lib/                # Supabase 클라이언트
+│   ├── types/
+│   └── utils/              # PII 암호화 (fieldEncryption.ts)
+├── supabase/migrations/    # Postgres 스키마 · seed
+├── scripts/                # db:migrate, seed-gyms
+├── docs/
+│   ├── README.md           # API 진행도
+│   └── API.md              # REST API v1 명세
+└── .env.example
 ```
 
 | 폴더 | 역할 | 문서 |
 |------|------|------|
-| [`backend/`](./backend/) | API 서버, DB 마이그레이션, PII 암호화 | [backend/README.md](./backend/README.md) |
-| [`frontend-web/`](./frontend-web/) | 핵심 웹 UI | [frontend-web/README.md](./frontend-web/README.md) |
-| [`mobile-app/`](./mobile-app/) | 하이브리드 앱 래퍼 | [mobile-app/README.md](./mobile-app/README.md) |
+| [`src/`](./src/) | Express API, PII 암호화, 매칭 점수 | 이 파일 · [docs/API.md](./docs/API.md) |
+| [`docs/`](./docs/) | API 진행도 · 명세 | [docs/README.md](./docs/README.md) |
+| [`supabase/migrations/`](./supabase/migrations/) | 스키마 · seed · PII | — |
 
-### frontend-web 내부
-
-- `src/pages/user/` — 회원 모드 (모바일 비율, Safe Area 대응)
-- `src/pages/auth/` — 로그인 · 회원가입 · 비밀번호 찾기/재설정 · OAuth
-- `src/pages/trainer/` — 트레이너 대시보드
-- `src/features/` — 강좌 / 식단 / 지도 / 상담 등
-- `src/services/` — API 클라이언트 (`api.ts`, `gymsApi.ts`, `consultRequestsApi.ts`)
+관련 저장소: [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE) (`frontend-web`, `mobile-app`)
 
 ## 아키텍처 & 데이터 흐름
 
@@ -58,12 +66,12 @@ fitcheck-project/
 
 ```mermaid
 flowchart TB
-  subgraph Client["화면 (Client)"]
+  subgraph Client["화면 (Client) — FitCheck-FE"]
     WEB["frontend-web<br/>React + Vite<br/>/user · /trainer"]
     MOBILE["mobile-app<br/>Expo WebView"]
   end
 
-  subgraph Server["서버 (Backend)"]
+  subgraph Server["서버 (Backend) — 이 저장소"]
     API["Express API<br/>Render · localhost:5001<br/>JWT 검증 · PII 암호화"]
   end
 
@@ -140,7 +148,7 @@ flowchart LR
   E -->|decryptField| C
 ```
 
-→ 상세: [backend/README.md — 상담 신청 개인정보 암호화](./backend/README.md#상담-신청-개인정보-암호화)
+→ 상세: [상담 신청 개인정보 암호화](#상담-신청-개인정보-암호화)
 
 ### 헬스장 매칭
 
@@ -157,10 +165,7 @@ flowchart LR
 
 ## 빠른 시작
 
-### 1. Backend
-
 ```bash
-cd fitcheck-project/backend
 npm install
 cp .env.example .env   # Supabase, 암호화 키 등 설정
 npm run db:migrate     # 최초 1회
@@ -169,50 +174,51 @@ npm run dev
 
 → http://localhost:5001
 
-### 2. Frontend Web
-
-```bash
-cd fitcheck-project/frontend-web
-npm install
-cp .env.example .env.local   # 필요 시 (Naver Map Client ID 등)
-npm run dev
-```
-
-→ http://localhost:5173  
+프론트엔드 로컬 실행은 [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE)의 `frontend-web`을 따릅니다.  
 Vite dev 서버는 `/api`를 `localhost:5001`로 프록시합니다.
 
-- 회원: `/user`
-- 트레이너: `/trainer`
-
-### 3. Mobile App (선택)
-
-```bash
-cd fitcheck-project/mobile-app
-npm install
-npm start
-```
-
-`EXPO_PUBLIC_WEB_APP_URL`을 frontend-web 주소로 맞춥니다 (실기기는 LAN IP, 배포본은 Vercel URL).
-
-### 4. 프로덕션 (배포)
+### 프로덕션 (배포)
 
 | 서비스 | 플랫폼 | 비고 |
 |--------|--------|------|
-| frontend-web | **Vercel** | SPA 라우팅 — `frontend-web/vercel.json` |
+| frontend-web | **Vercel** | [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE) |
 | backend | **Render** | https://fitcheck-server-wvj4.onrender.com |
 
-Vercel 환경 변수: `VITE_API_BASE_URL=https://fitcheck-server-wvj4.onrender.com`, `VITE_SUPABASE_*`, `VITE_SITE_URL`, `VITE_NAVER_MAP_CLIENT_ID`
+프론트 환경 변수: `VITE_API_BASE_URL=https://fitcheck-server-wvj4.onrender.com`, `VITE_SUPABASE_*`, `VITE_SITE_URL`, `VITE_NAVER_MAP_CLIENT_ID`
 
 Supabase Redirect URLs: `/auth/callback`, `/reset-password` (로컬·배포 도메인 모두 등록)
 
 ## 요구 사항
 
 - Node.js 18+
-- Supabase 프로젝트 (backend `.env`)
-- mobile-app: Expo Go 또는 시뮬레이터
+- Supabase 프로젝트 (`.env`)
+- 프론트엔드: [FitCheck-FE](https://github.com/FitCheck-Healthcare/FitCheck-FE)
 
-## 보안
+## 환경 변수
 
-상담 신청 개인정보(이름·연락처·메모 등)는 백엔드에서 **AES-256-GCM**으로 암호화해 Supabase에 저장합니다.
+`.env.example` → `.env`
 
-→ 상세: [backend/README.md — 상담 신청 개인정보 암호화](./backend/README.md#상담-신청-개인정보-암호화)
+| 변수 | 설명 |
+|------|------|
+| `PORT` | 기본 `5001` (macOS AirPlay가 5000을 사용) |
+| `SUPABASE_URL` | Supabase 프로젝트 URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | service_role 키 (서버 전용) |
+| `SUPABASE_DB_PASSWORD` | 마이그레이션용 DB 비밀번호 |
+| `NAVER_SEARCH_CLIENT_ID` / `SECRET` | 지역 검색 API (서버 전용) |
+| `ENCRYPTION_KEY` | 상담 PII AES-256-GCM 키 (`openssl rand -base64 32`) |
+| `PHONE_HMAC_PEPPER` | 전화번호 조회용 HMAC pepper |
+| `GEMINI_API_KEY` | 식단 Vision 분석 |
+
+## 상담 신청 개인정보 암호화
+
+상담 신청의 이름·연락처·주제·메모만 백엔드에서 **AES-256-GCM**으로 암호화해 Supabase에 저장합니다.
+
+| 항목 | 내용 |
+|------|------|
+| 알고리즘 | AES-256-GCM |
+| 암호문 형식 | `v1:<iv>:<tag>:<ciphertext>` (base64url) |
+| 대상 필드 | `name`, `phone`, `topic`, `topic_detail`, `memo` |
+| 전화번호 조회 | HMAC-SHA256 (`phone_hmac`) — 평문 검색 없이 매칭 |
+| 구현 | [`src/utils/fieldEncryption.ts`](./src/utils/fieldEncryption.ts) |
+
+키는 `.env`의 `ENCRYPTION_KEY`(32바이트 base64), `PHONE_HMAC_PEPPER`로 관리합니다.
